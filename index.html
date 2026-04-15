@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ringkasan Kewarganegaraan Interaktif</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #121933;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: #b9c2ea;
+      --accent: #70e1c8;
+      --accent-2: #8fb3ff;
+      --accent-3: #ffd166;
+      --danger: #ff8a8a;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 40px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(143,179,255,0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(112,225,200,0.18), transparent 24%),
+        linear-gradient(180deg, #0a1020, #0d1326 35%, #09101e);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--border);
+      background: rgba(6, 10, 20, 0.7);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      background: linear-gradient(135deg, rgba(112,225,200,0.18), rgba(143,179,255,0.18));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      line-height: 1.35;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .progress-box {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: inherit;
+      transition: width 0.35s ease;
+    }
+
+    .nav {
+      margin-top: 18px;
+      display: grid;
+      gap: 8px;
+      max-height: calc(100vh - 250px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .nav a {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: 0.25s ease;
+      font-size: 0.95rem;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border-color: var(--border);
+      transform: translateX(2px);
+    }
+
+    .mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 14px 16px;
+      background: rgba(6, 10, 20, 0.82);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .menu-btn, .ghost-btn, .chip {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .menu-btn:hover, .ghost-btn:hover, .chip:hover { background: rgba(255,255,255,0.12); }
+
+    .content {
+      padding: 28px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .hero {
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(112,225,200,0.14), rgba(143,179,255,0.14), rgba(255,209,102,0.1));
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 60%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: var(--accent);
+      font-size: 0.88rem;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.12;
+      margin: 0 0 12px;
+      max-width: 780px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 860px;
+      margin: 0;
+    }
+
+    .hero-actions {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #08101f;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .card h3, .card h4 { margin-top: 0; }
+
+    .stats .value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .stats p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .section {
+      margin-top: 26px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h3 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .section-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-wrap input {
+      width: min(360px, 100%);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      outline: none;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .chip.active {
+      background: linear-gradient(90deg, rgba(112,225,200,0.22), rgba(143,179,255,0.22));
+      border-color: rgba(143,179,255,0.42);
+    }
+
+    .study-order {
+      counter-reset: belajar;
+      display: grid;
+      gap: 14px;
+    }
+
+    .study-step {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: start;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .study-step::before {
+      counter-increment: belajar;
+      content: counter(belajar);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #08101f;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 209, 102, 0.12);
+      border: 1px solid rgba(255, 209, 102, 0.28);
+      color: var(--accent-3);
+      font-size: 0.84rem;
+      align-self: center;
+    }
+
+    .accordion {
+      display: grid;
+      gap: 14px;
+    }
+
+    .accordion-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .accordion-button {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      cursor: pointer;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .accordion-button span.small {
+      display: block;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    .accordion-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      flex: 0 0 auto;
+      transition: transform 0.2s ease;
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(45deg);
+    }
+
+    .accordion-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .accordion-inner {
+      padding: 0 20px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+    }
+
+    .subcard {
+      margin-top: 14px;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+    }
+
+    .subcard h5 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .subcard ul, .subcard ol {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .important-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .important-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .important-item .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      margin-top: 7px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .checklist {
+      display: grid;
+      gap: 12px;
+    }
+
+    .check-item {
+      display: flex;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .check-item input {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: #70e1c8;
+      cursor: pointer;
+    }
+
+    .check-item.done {
+      opacity: 0.78;
+      background: rgba(112,225,200,0.08);
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .flashcard {
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+    }
+
+    .flashcard h4 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .flashcard p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+      padding-bottom: 20px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-100%);
+        z-index: 60;
+        width: min(85vw, 320px);
+        transition: transform 0.25s ease;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .mobile-topbar { display: flex; }
+      .content { padding: 18px; }
+      .grid-3, .two-col, .quick-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 22px; border-radius: 24px; }
+      .card { padding: 16px; }
+      .accordion-button { padding: 16px; }
+      .accordion-inner { padding: 0 16px 16px; }
+      .study-step { grid-template-columns: auto 1fr; }
+      .badge { grid-column: 2; justify-self: start; }
+      .search-wrap input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-topbar">
+    <button class="menu-btn" id="menuBtn">☰ Materi</button>
+    <div style="font-weight:700;">Ringkasan PKn</div>
+    <button class="ghost-btn" id="scrollTopBtn">↑ Atas</button>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <h1>Ringkasan Kewarganegaraan Interaktif</h1>
+        <p>Belajar lebih terstruktur, fokus, dan enak dibaca menjelang ujian.</p>
+        <div class="progress-box">
+          <div class="progress-top">
+            <span>Progress belajar</span>
+            <strong id="progressText">0%</strong>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <nav class="nav" id="navLinks">
+        <a href="#beranda" class="active">Beranda</a>
+        <a href="#urutan">Urutan Belajar</a>
+        <a href="#materi">Ringkasan per File</a>
+        <a href="#prioritas">Materi Paling Penting</a>
+        <a href="#checklist">Checklist Belajar</a>
+        <a href="#hafalan">Hafalan Cepat</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero" id="beranda">
+        <div class="eyebrow">Website belajar ringkas + interaktif</div>
+        <h2>Ringkasan Materi Kewarganegaraan yang dibuat lebih visual, rapi, dan mudah dipahami</h2>
+        <p>
+          Halaman ini merangkum 7 file utama: Konsep PKn, Identitas Nasional, Integrasi Nasional, Konstitusi, Perilaku Konstitusional, Kewarganegaraan Indonesia, serta Hak dan Kewajiban Negara dan Warga Negara. Setiap bagian dirancang dengan poin-poin inti, fokus ujian, dan susunan belajar yang lebih nyaman dilihat.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#urutan">Mulai Belajar</a>
+          <button class="ghost-btn" id="expandAllBtn">Buka Semua Materi</button>
+          <button class="ghost-btn" id="collapseAllBtn">Tutup Semua Materi</button>
+        </div>
+      </section>
+
+      <section class="grid grid-3 section stats">
+        <div class="card">
+          <div class="value">7</div>
+          <p>Topik utama dirangkum per file agar Anda bisa belajar satu per satu tanpa bingung.</p>
+        </div>
+        <div class="card">
+          <div class="value">Fokus</div>
+          <p>Setiap materi dipadatkan ke definisi, inti materi, poin penting, dan hal yang perlu dihafal.</p>
+        </div>
+        <div class="card">
+          <div class="value">Siap Ujian</div>
+          <p>Ada urutan belajar, checklist, dan hafalan cepat supaya belajar lebih efisien malam ini.</p>
+        </div>
+      </section>
+
+      <section class="section" id="urutan">
+        <div class="section-header">
+          <div>
+            <h3>Urutan Materi yang Sebaiknya Dipelajari</h3>
+            <p>Mulai dari pondasi, lalu lanjut ke identitas bangsa, aturan dasar negara, hingga penerapannya.</p>
+          </div>
+        </div>
+        <div class="study-order">
+          <div class="study-step">
+            <div>
+              <strong>Konsep, Tujuan, dan Fungsi PKn</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Pelajari dulu alasan PKn penting, tujuan pembelajaran, dan bagaimana PKn membentuk warga negara yang baik, cerdas, cinta tanah air, dan bertanggung jawab.</p>
+            </div>
+            <span class="badge">Fondasi utama</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Identitas Nasional</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Pahami jati diri bangsa Indonesia: Pancasila, UUD 1945, Merah Putih, Garuda, Bahasa Indonesia, Indonesia Raya, dan Bhinneka Tunggal Ika.</p>
+            </div>
+            <span class="badge">Wajib hafal</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Integrasi Nasional</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Setelah tahu identitas bangsa, pahami bagaimana keberagaman disatukan dalam NKRI dan apa tantangan yang mengancam persatuan.</p>
+            </div>
+            <span class="badge">Sering keluar</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Konstitusi</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Pelajari pengertian konstitusi, fungsi, kedudukan UUD 1945, dinamika konstitusi Indonesia, dan syarat amandemen UUD.</p>
+            </div>
+            <span class="badge">Sangat penting</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Kewarganegaraan Indonesia</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Pahami siapa warga negara, bedanya dengan penduduk, asas kewarganegaraan, dan pentingnya dokumen kependudukan.</p>
+            </div>
+            <span class="badge">Konsep inti</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Hak dan Kewajiban</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Dalami hubungan timbal balik hak dan kewajiban antara negara dan warga negara serta pasal-pasal penting dalam UUD 1945.</p>
+            </div>
+            <span class="badge">Pasal penting</span>
+          </div>
+          <div class="study-step">
+            <div>
+              <strong>Perilaku Konstitusional</strong>
+              <p style="margin:8px 0 0;color:var(--muted);line-height:1.75;">Bagian penutup yang menekankan bagaimana semua nilai tadi diterapkan dalam perilaku warga negara sehari-hari.</p>
+            </div>
+            <span class="badge">Penerapan</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="materi">
+        <div class="section-header">
+          <div>
+            <h3>Ringkasan per File</h3>
+            <p>Ketik kata kunci seperti “konstitusi”, “hak”, “penduduk”, atau “identitas” untuk menyaring materi.</p>
+          </div>
+          <div class="search-wrap">
+            <input type="text" id="searchInput" placeholder="Cari materi atau kata kunci..." />
+          </div>
+        </div>
+
+        <div class="chips" id="topicChips">
+          <button class="chip active" data-filter="all">Semua</button>
+          <button class="chip" data-filter="pkn">PKn</button>
+          <button class="chip" data-filter="identitas">Identitas</button>
+          <button class="chip" data-filter="integrasi">Integrasi</button>
+          <button class="chip" data-filter="konstitusi">Konstitusi</button>
+          <button class="chip" data-filter="kewarganegaraan">Kewarganegaraan</button>
+          <button class="chip" data-filter="hak">Hak & Kewajiban</button>
+        </div>
+
+        $1
+          <article class="accordion-item" data-tags="pkn konsep tujuan fungsi pendidikan kewarganegaraan warga negara sarjana profesional mkwk kurikulum demokrasi partisipasi">
+            <button class="accordion-button">
+              <div>
+                1. Konsep, Tujuan, dan Fungsi Pendidikan Kewarganegaraan
+                <span class="small">Fondasi awal: mengapa PKn dipelajari, ruang lingkupnya, dan perannya bagi mahasiswa</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Gambaran umum materi</h5>
+                    <ul>
+                      <li>Pendidikan Kewarganegaraan merupakan bagian dari Mata Kuliah Wajib Kurikulum di perguruan tinggi bersama Pendidikan Agama, Pendidikan Pancasila, dan Bahasa Indonesia.</li>
+                      <li>PKn diposisikan sebagai general education yang membantu mahasiswa mengembangkan kemampuan pikir, rasa, dan perilaku yang lebih bermartabat.</li>
+                      <li>Fokus akhirnya adalah membentuk warga negara yang sadar kebangsaan, cinta tanah air, dan siap menghadapi tantangan global.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Tujuan utama PKn</h5>
+                    <ul>
+                      <li>Membentuk mahasiswa menjadi warga negara yang memiliki rasa kebangsaan dan cinta tanah air.</li>
+                      <li>Menjadikan mahasiswa demokratis, berkeadaban, berdisiplin, dan berpartisipasi aktif dalam kehidupan berbangsa dan bernegara.</li>
+                      <li>Menyiapkan sarjana dan profesional yang tidak hanya cerdas secara akademik, tetapi juga kuat secara karakter kebangsaan.</li>
+                      <li>Mendorong lahirnya warga negara yang kompetitif, bertanggung jawab, dan berlandaskan nilai Pancasila.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Yang dipelajari dalam PKn</h5>
+                    <ul>
+                      <li>Keindonesiaan dan kepribadian bangsa Indonesia.</li>
+                      <li>Rasa kebangsaan dan cinta tanah air.</li>
+                      <li>Konsep warga negara, kewarganegaraan, hak dan kewajiban.</li>
+                      <li>Demokrasi, bela negara, dan partisipasi warga negara.</li>
+                      <li>Tantangan bangsa di era modern, termasuk media sosial, korupsi, ketidakadilan, dan persoalan global.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Konsep sarjana dan profesional</h5>
+                    <ul>
+                      <li>Sarjana adalah lulusan pendidikan akademik yang mampu mengamalkan ilmu pengetahuan dan teknologi melalui penalaran ilmiah.</li>
+                      <li>Profesional adalah orang yang memiliki keahlian, kemahiran, standar mutu, norma kerja, dan diperoleh melalui pendidikan profesi.</li>
+                      <li>Karena itu, PKn tidak hanya penting untuk pengetahuan, tetapi untuk membentuk sikap dan tanggung jawab sosial lulusan.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Dasar kajian PKn</h5>
+                    <ul>
+                      <li>Etimologis: melihat makna istilah kewarganegaraan dan pendidikan kewarganegaraan.</li>
+                      <li>Konseptual: menelaah PKn sebagai program pendidikan formal untuk membentuk warga negara muda.</li>
+                      <li>Teoretis: didukung pendapat para ahli tentang citizenship dan citizenship education.</li>
+                      <li>Yuridis: didukung UUD 1945, UU Sistem Pendidikan Nasional, UU Pendidikan Tinggi, dan kebijakan kurikulum.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Dinamika historis PKn di Indonesia</h5>
+                    <ul>
+                      <li>PKn berkembang seiring perubahan kurikulum dan situasi politik nasional.</li>
+                      <li>Nama mata kuliahnya pernah berubah, antara lain: Kewarganegaraan, Civics, Pendidikan Kewargaan Negara, Pendidikan Kewiraan, PMP, PKn, dan PPKn.</li>
+                      <li>Perubahan tersebut menunjukkan bahwa PKn selalu menyesuaikan dengan kebutuhan bangsa dan arah pembangunan nasional.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Tipe warga negara dalam materi</h5>
+                    <ul>
+                      <li>Sponge citizen: warga yang cenderung pasif menerima.</li>
+                      <li>Stone citizen: warga yang cenderung tidak peka dan sulit bergerak.</li>
+                      <li>Generator citizen: warga yang aktif, sadar, dan mampu memberi dampak positif.</li>
+                      <li>Tujuan PKn adalah mengarahkan mahasiswa menjadi good and smart citizenship.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Hal yang wajib diingat</h5>
+                    <ol>
+                      <li>PKn adalah pendidikan karakter kewarganegaraan, bukan sekadar hafalan teori.</li>
+                      <li>PKn membentuk warga negara yang baik, cerdas, cinta tanah air, dan bertanggung jawab.</li>
+                      <li>PKn relevan dengan tantangan abad 21: media sosial, IPTEK, krisis moral, dan bonus demografi 2045.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="identitas nasional jati diri pancasila garuda merah putih bahasa indonesia bhinneka tunggal ika indonesia raya republik presidensial">
+            <button class="accordion-button">
+              <div>
+                2. Identitas Nasional
+                <span class="small">Jati diri bangsa Indonesia, unsur-unsurnya, sumber pembentuknya, dan tantangannya</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Pengertian identitas nasional</h5>
+                    <ul>
+                      <li>Identitas nasional adalah jati diri bangsa, yaitu ciri, karakteristik, perasaan, dan keyakinan kebangsaan yang membedakan Indonesia dari bangsa lain.</li>
+                      <li>Identitas nasional bukan hanya simbol, tetapi juga cerminan nilai, sejarah, dan kepribadian bangsa.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Fungsi identitas nasional</h5>
+                    <ul>
+                      <li>Agar Indonesia dikenal oleh bangsa-bangsa lain.</li>
+                      <li>Membedakan Indonesia dengan negara lain.</li>
+                      <li>Menjaga eksistensi dan kelangsungan hidup bangsa.</li>
+                      <li>Menjaga kewibawaan, kehormatan, dan posisi Indonesia sebagai bangsa yang sejajar dengan bangsa lain.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Unsur identitas nasional Indonesia</h5>
+                    <ul>
+                      <li>Bentuk negara: Kesatuan.</li>
+                      <li>Bentuk pemerintahan: Republik.</li>
+                      <li>Sistem pemerintahan: Presidensial.</li>
+                      <li>Dasar negara: Pancasila.</li>
+                      <li>Konstitusi negara: UUD NRI 1945.</li>
+                      <li>Lambang negara: Garuda Pancasila.</li>
+                      <li>Semboyan negara: Bhinneka Tunggal Ika.</li>
+                      <li>Bendera negara: Merah Putih.</li>
+                      <li>Lagu kebangsaan: Indonesia Raya.</li>
+                      <li>Bahasa negara: Bahasa Indonesia.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Makna beberapa simbol penting</h5>
+                    <ul>
+                      <li>Merah Putih adalah identitas visual bangsa Indonesia.</li>
+                      <li>Bahasa Indonesia menjadi alat pemersatu bangsa.</li>
+                      <li>Indonesia Raya mencerminkan semangat kebangsaan dan nasionalisme.</li>
+                      <li>Pancasila adalah ideologi dan dasar negara.</li>
+                      <li>Bhinneka Tunggal Ika menegaskan persatuan dalam keberagaman.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Sumber identitas nasional</h5>
+                    <ul>
+                      <li>Etnis dan kesukubangsaan.</li>
+                      <li>Interaksi dan komunikasi antarkelompok masyarakat.</li>
+                      <li>Persinggungan budaya.</li>
+                      <li>Sejarah kebangkitan nasional dan perjuangan bangsa.</li>
+                      <li>Pendidikan dan perkembangan politik.</li>
+                      <li>Landasan hukum seperti UUD 1945 dan UU No. 24 Tahun 2009.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Pendekatan memahami identitas nasional</h5>
+                    <ul>
+                      <li>Historis: dilihat dari perjalanan sejarah bangsa.</li>
+                      <li>Sosiologis: dilihat dari kehidupan masyarakat dan budaya.</li>
+                      <li>Politis: dilihat dari pembentukan negara dan kebijakan nasional.</li>
+                      <li>Primer dan sekunder: dilihat dari lapisan identitas yang dimiliki masyarakat.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Tantangan identitas nasional</h5>
+                    <ul>
+                      <li>Masuknya budaya global melalui media, bahasa, pakaian, hiburan, dan gaya hidup.</li>
+                      <li>Pengaruh budaya populer luar negeri pada generasi muda.</li>
+                      <li>Kekhawatiran lunturnya rasa bangga terhadap budaya dan simbol nasional.</li>
+                      <li>Tantangan utamanya bukan sekadar budaya asing, tetapi kurangnya filter, pemahaman, dan tanggung jawab warga negara dalam menjaga identitas bangsa.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Hal yang wajib diingat</h5>
+                    <ol>
+                      <li>Identitas nasional = jati diri bangsa Indonesia.</li>
+                      <li>Unsur identitas nasional harus benar-benar hafal.</li>
+                      <li>Globalisasi bukan alasan kehilangan identitas; justru identitas harus dipertahankan dengan sikap selektif dan bertanggung jawab.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="integrasi nasional persatuan kesatuan nkri keberagaman separatis globalisasi horizontal vertikal politik ekonomi sosial budaya">
+            <button class="accordion-button">
+              <div>
+                3. Integrasi Nasional
+                <span class="small">Makna penyatuan bangsa, faktor pendukung, jenis integrasi, dan ancaman disintegrasi</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Pengertian integrasi nasional</h5>
+                    <ul>
+                      <li>Integrasi nasional adalah proses penyatuan berbagai unsur bangsa menjadi satu kesatuan yang utuh dalam negara.</li>
+                      <li>Integrasi berarti pembauran sampai menjadi satu kesatuan bulat, tidak terpecah, dan memiliki arah kebersamaan.</li>
+                      <li>Dalam konteks Indonesia, integrasi nasional berarti menyatukan rakyat, pemerintah, wilayah, dan identitas nasional dalam wadah NKRI.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Sumber historis integrasi</h5>
+                    <ul>
+                      <li>Model integrasi imperium Majapahit.</li>
+                      <li>Model integrasi kolonial.</li>
+                      <li>Model integrasi nasional Indonesia.</li>
+                      <li>Tonggak sejarah seperti kebangkitan nasional, Sumpah Pemuda, organisasi politik, dan Proklamasi memperkuat integrasi bangsa.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Tahapan penting perkembangan integrasi</h5>
+                    <ul>
+                      <li>Masa perintis.</li>
+                      <li>Saat kebangkitan nasional.</li>
+                      <li>Masa penegas melalui Sumpah Pemuda.</li>
+                      <li>Masa percobaan lewat organisasi politik.</li>
+                      <li>Masa pendobrak menuju bangsa yang lebih solid.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Jenis integrasi nasional</h5>
+                    <ul>
+                      <li>Integrasi bangsa.</li>
+                      <li>Integrasi wilayah.</li>
+                      <li>Integrasi elit dan massa.</li>
+                      <li>Integrasi nilai.</li>
+                      <li>Integrasi tingkah laku.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Aspek dan dimensi integrasi</h5>
+                    <ul>
+                      <li>Aspek politik: berkaitan dengan kekuasaan, pemerintahan, dan kebijakan negara.</li>
+                      <li>Aspek ekonomi: berkaitan dengan pemerataan dan ketergantungan antardaerah/kelompok.</li>
+                      <li>Aspek sosial budaya: berkaitan dengan hubungan suku, agama, ras, bahasa, dan kebiasaan.</li>
+                      <li>Dimensi horizontal: hubungan antarkelompok masyarakat.</li>
+                      <li>Dimensi vertikal: hubungan rakyat dengan pemerintah atau elit.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Faktor pendukung integrasi nasional</h5>
+                    <ul>
+                      <li>Adanya nilai bersama.</li>
+                      <li>Adanya ketergantungan ekonomi.</li>
+                      <li>Kekuatan lembaga politik.</li>
+                      <li>Gaya kepemimpinan yang tepat.</li>
+                      <li>Ancaman dari luar yang memperkuat rasa kebersamaan.</li>
+                      <li>Ideologi nasional dan pembangunan ekonomi.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Tantangan dan ancaman</h5>
+                    <ul>
+                      <li>Gerakan separatis.</li>
+                      <li>Masalah teritorial atau ketimpangan wilayah.</li>
+                      <li>Perilaku non-Pancasila.</li>
+                      <li>Menurunnya kepercayaan antara elit dan massa.</li>
+                      <li>Globalisasi yang dapat melemahkan solidaritas nasional jika tidak diimbangi identitas yang kuat.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Strategi memperkuat integrasi</h5>
+                    <ol>
+                      <li>Memperkuat nilai bersama.</li>
+                      <li>Memperkokoh lembaga politik.</li>
+                      <li>Mewujudkan kepemimpinan yang kuat.</li>
+                      <li>Membangun fasilitas dan organisasi bersama.</li>
+                      <li>Menciptakan ketergantungan ekonomi antarkelompok.</li>
+                      <li>Menguatkan identitas nasional dan persatuan dalam keberagaman.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="konstitusi uud 1945 amandemen pasal 37 pembatasan kekuasaan pembukaan uud hukum dasar konvensi ris uuds dekrit">
+            <button class="accordion-button">
+              <div>
+                4. Konstitusi
+                <span class="small">Aturan dasar negara, fungsi pembatasan kekuasaan, dinamika sejarah, dan struktur UUD 1945</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Pengertian konstitusi</h5>
+                    <ul>
+                      <li>Konstitusi adalah seperangkat aturan dasar yang berisi ketentuan tentang bagaimana negara dibentuk, diatur, dan dijalankan.</li>
+                      <li>Konstitusi juga dipahami sebagai peraturan dasar mengenai pembentukan negara.</li>
+                      <li>Di Indonesia, istilah yang digunakan adalah Undang-Undang Dasar atau UUD.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Jenis konstitusi</h5>
+                    <ul>
+                      <li>Konstitusi tertulis: berupa naskah resmi, misalnya UUD 1945.</li>
+                      <li>Konstitusi tidak tertulis: berupa konvensi atau kebiasaan ketatanegaraan.</li>
+                      <li>Dalam arti sempit, konstitusi identik dengan UUD tertulis.</li>
+                      <li>Dalam arti luas, konstitusi mencakup aturan tertulis dan tidak tertulis.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Fungsi konstitusi</h5>
+                    <ul>
+                      <li>Menjadi landasan penyelenggaraan negara.</li>
+                      <li>Mengatur organisasi negara dan pembagian kekuasaan.</li>
+                      <li>Membatasi kekuasaan pemerintah agar tidak sewenang-wenang.</li>
+                      <li>Menjamin hak-hak asasi warga negara.</li>
+                      <li>Menjadi alat kontrol terhadap kekuasaan.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Muatan utama konstitusi</h5>
+                    <ul>
+                      <li>Organisasi negara.</li>
+                      <li>Hak asasi manusia.</li>
+                      <li>Prosedur perubahan UUD.</li>
+                      <li>Larangan mengubah sifat tertentu dari UUD.</li>
+                      <li>Cita-cita rakyat dan asas ideologi negara.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Alasan konstitusi diperlukan</h5>
+                    <ul>
+                      <li>Kekuasaan yang tidak dibatasi cenderung disalahgunakan.</li>
+                      <li>Karena itu, konstitusi diperlukan untuk menjamin keseimbangan antara pemerintah dan rakyat.</li>
+                      <li>Konstitusi berhubungan erat dengan prinsip pemisahan dan pembagian kekuasaan.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Pasal yang menunjukkan pembatasan kekuasaan presiden</h5>
+                    <ul>
+                      <li>Pasal 4 ayat 1.</li>
+                      <li>Pasal 6 ayat 1.</li>
+                      <li>Pasal 7.</li>
+                      <li>Pasal 7A dan 7B.</li>
+                      <li>Pasal 7C.</li>
+                      <li>Pasal 11, 12, 13, 14, dan 15.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Dinamika konstitusi Indonesia</h5>
+                    <ul>
+                      <li>UUD 1945 (18 Agustus 1945–27 Desember 1949).</li>
+                      <li>Konstitusi RIS (27 Desember 1949–17 Agustus 1950).</li>
+                      <li>UUD Sementara 1950 (17 Agustus 1950–5 Juli 1959).</li>
+                      <li>Kembali ke UUD 1945 melalui Dekrit Presiden 5 Juli 1959.</li>
+                      <li>UUD 1945 hasil amandemen sejak 1999 hingga 2002.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Pasal 37: syarat mengubah UUD 1945</h5>
+                    <ul>
+                      <li>Usul diajukan minimal oleh 1/3 anggota MPR.</li>
+                      <li>Usul diajukan secara tertulis dan jelas alasan perubahannya.</li>
+                      <li>Sidang harus dihadiri sekurang-kurangnya 2/3 anggota MPR.</li>
+                      <li>Putusan disetujui sekurang-kurangnya 50% + 1 dari seluruh anggota MPR.</li>
+                      <li>Bentuk Negara Kesatuan Republik Indonesia tidak dapat diubah.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Makna Pembukaan UUD 1945</h5>
+                    <ul>
+                      <li>Alinea I: bangsa Indonesia anti penjajahan.</li>
+                      <li>Alinea II: kemerdekaan hasil perjuangan untuk mewujudkan negara merdeka, bersatu, berdaulat, adil, dan makmur.</li>
+                      <li>Alinea III: kemerdekaan atas rahmat Tuhan Yang Maha Kuasa.</li>
+                      <li>Alinea IV: tujuan negara, bentuk negara republik, kedaulatan rakyat, dan dasar negara Pancasila.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Bagian-bagian penting UUD 1945</h5>
+                    <ul>
+                      <li>Mengatur bentuk dan kedaulatan negara.</li>
+                      <li>Mengatur MPR, DPR, DPD, Presiden, kementerian, pemerintah daerah, dan lembaga yudikatif.</li>
+                      <li>Mengatur warga negara, HAM, agama, pertahanan, pendidikan, ekonomi, hingga perubahan UUD.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="perilaku konstitusional konstitusionalisme konstitusionalitas sadar berkonstitusi uud 1945 warga negara hukum dasar">
+            <button class="accordion-button">
+              <div>
+                5. Perilaku Konstitusional Warga Negara
+                <span class="small">Kesadaran berkonstitusi, konstitusionalisme, dan penerapan UUD 1945 dalam perilaku sehari-hari</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Pengertian dasar</h5>
+                    <ul>
+                      <li>Konstitusi adalah dokumen atau aturan dasar untuk menjalankan organisasi, termasuk negara.</li>
+                      <li>Konstitusi negara dapat berupa tertulis maupun tidak tertulis.</li>
+                      <li>UUD NRI 1945 merupakan konstitusi Indonesia dan hukum dasar tertinggi dalam sistem hukum nasional.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Perbedaan konstitusi dan konstitusionalisme</h5>
+                    <ul>
+                      <li>Konstitusi menunjuk pada aturan dasar negara.</li>
+                      <li>Konstitusionalisme adalah paham bahwa kekuasaan negara harus dibatasi oleh konstitusi.</li>
+                      <li>Esensi konstitusionalisme adalah pembatasan kekuasaan agar negara tidak bertindak sewenang-wenang.</li>
+                      <li>Jadi, adanya konstitusi belum tentu otomatis berarti negara menjalankan konstitusionalisme secara baik.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Konstitusionalitas</h5>
+                    <ul>
+                      <li>Konstitusionalitas berarti suatu norma atau tindakan sesuai dengan konstitusi.</li>
+                      <li>Suatu undang-undang dikatakan konstitusional bila isinya berkesesuaian dengan UUD NRI 1945.</li>
+                      <li>Jika bertentangan dengan UUD 1945, maka norma itu dianggap tidak konstitusional.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Budaya sadar berkonstitusi</h5>
+                    <ul>
+                      <li>Dimulai dari pemahaman terhadap nilai dan norma dasar dalam UUD 1945.</li>
+                      <li>Konstitusi dijadikan rujukan dalam kehidupan bermasyarakat, berbangsa, dan bernegara.</li>
+                      <li>Jika warga negara paham konstitusi, mereka dapat mengetahui serta mempertahankan hak-hak konstitusionalnya.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Makna perilaku konstitusional</h5>
+                    <ul>
+                      <li>Berperilaku sesuai dengan UUD NRI 1945.</li>
+                      <li>Tidak bertindak bertentangan dengan aturan dasar negara.</li>
+                      <li>Menjadikan kesadaran konstitusi sebagai kebiasaan dalam kehidupan sehari-hari.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Contoh perilaku konstitusional</h5>
+                    <ul>
+                      <li>Mematuhi hukum dan aturan negara.</li>
+                      <li>Menghormati hak orang lain.</li>
+                      <li>Menggunakan kebebasan berpendapat secara bertanggung jawab.</li>
+                      <li>Ikut menjaga ketertiban, persatuan, dan nilai demokrasi.</li>
+                      <li>Menjalankan kewajiban sebagai warga negara, termasuk partisipasi dalam kehidupan publik.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Hal yang wajib diingat</h5>
+                    <ol>
+                      <li>Konstitusi adalah aturan dasar, sedangkan konstitusionalisme adalah paham pembatasan kekuasaan.</li>
+                      <li>Konstitusionalitas berarti kesesuaian dengan UUD 1945.</li>
+                      <li>Perilaku konstitusional adalah penerapan sadar terhadap nilai dan norma konstitusi dalam kehidupan sehari-hari.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="kewarganegaraan indonesia warga negara penduduk ius soli ius sanguinis apatride bipatride multipatride dokumen kependudukan catatan sipil">
+            <button class="accordion-button">
+              <div>
+                6. Kewarganegaraan Indonesia
+                <span class="small">Makna warga negara, kewarganegaraan, asas hukum, dan perbedaan warga negara dengan penduduk</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Konsep warga negara</h5>
+                    <ul>
+                      <li>Warga negara berarti anggota dari komunitas bernama negara.</li>
+                      <li>Dalam pengertian citizen, warga negara adalah anggota suatu negara yang memiliki hubungan dengan pemerintah dan berhak atas perlindungan negara.</li>
+                      <li>Warga negara bukan hanya status hukum, tetapi juga bagian dari komunitas politik.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Konsep kewarganegaraan</h5>
+                    <ul>
+                      <li>Kewarganegaraan adalah keanggotaan yang menunjukkan hubungan atau ikatan antara warga negara dan negara.</li>
+                      <li>Menurut UU No. 12 Tahun 2006, kewarganegaraan adalah segala hal ihwal yang berhubungan dengan warga negara.</li>
+                      <li>Status kewarganegaraan menimbulkan hubungan timbal balik antara hak dan kewajiban warga negara dengan perlindungan dari negara.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Makna kewarganegaraan</h5>
+                    <ul>
+                      <li>Yuridis: ada ikatan hukum antara warga negara dan negara, dibuktikan dengan dokumen seperti akta kelahiran atau bukti kewarganegaraan.</li>
+                      <li>Sosiologis: ada ikatan emosional, sejarah, keturunan, nasib, dan tanah air.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Asas dan istilah penting</h5>
+                    <ul>
+                      <li>Ius soli: kewarganegaraan berdasarkan tempat lahir.</li>
+                      <li>Ius sanguinis: kewarganegaraan berdasarkan keturunan.</li>
+                      <li>Kewarganegaraan tunggal dan kewarganegaraan ganda terbatas.</li>
+                      <li>Apatride: tidak memiliki kewarganegaraan.</li>
+                      <li>Bipatride: memiliki dua kewarganegaraan.</li>
+                      <li>Multipatride: memiliki lebih dari dua kewarganegaraan.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Dasar hukum penting</h5>
+                    <ul>
+                      <li>Pasal 26 ayat 1 UUD 1945: yang menjadi warga negara adalah orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara.</li>
+                      <li>Pasal 26 ayat 2 UUD 1945: penduduk ialah warga negara Indonesia dan orang asing yang bertempat tinggal di Indonesia.</li>
+                      <li>Peraturan kewarganegaraan berkembang dari UU 1946, 1947, 1948, 1958, 1976, hingga UU No. 12 Tahun 2006.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Beda warga negara dan penduduk</h5>
+                    <ul>
+                      <li>Warga negara adalah orang yang secara hukum menjadi anggota negara Indonesia.</li>
+                      <li>Penduduk adalah semua orang yang tinggal di wilayah Indonesia dalam kurun tertentu, meliputi WNI dan orang asing yang menetap.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Atribut kewarganegaraan</h5>
+                    <ul>
+                      <li>Sense of identity atau perasaan memiliki identitas.</li>
+                      <li>Menikmati hak-hak tertentu.</li>
+                      <li>Memenuhi kewajiban-kewajiban yang sesuai.</li>
+                      <li>Punya minat dan keterlibatan pada urusan publik.</li>
+                      <li>Menerima nilai-nilai sosial dasar.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Catatan sipil dan dokumen kependudukan</h5>
+                    <ul>
+                      <li>Catatan sipil penting untuk memastikan status perdata seseorang.</li>
+                      <li>Peristiwa yang dicatat: kelahiran, perkawinan, perceraian, kematian, dan penggantian nama.</li>
+                      <li>Dokumen kependudukan penting karena berkaitan dengan identitas hukum, pelayanan publik, dan kepastian status seseorang di negara.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="accordion-item" data-tags="hak kewajiban pasal 28a 28j pasal 30 pasal 31 pasal 33 pasal 34 pendidikan kesehatan pajak bela negara demokrasi">
+            <button class="accordion-button">
+              <div>
+                7. Hak dan Kewajiban Negara dan Warga Negara
+                <span class="small">Hak, kewajiban, hubungan timbal balik, dasar historis, dan pasal-pasal penting dalam UUD 1945</span>
+              </div>
+              <div class="accordion-icon">＋</div>
+            </button>
+            <div class="accordion-panel">
+              <div class="accordion-inner two-col">
+                <div>
+                  <div class="subcard">
+                    <h5>Fokus utama materi</h5>
+                    <ul>
+                      <li>Membahas hak warga negara, kewajiban warga negara, hak negara, dan kewajiban negara.</li>
+                      <li>Menekankan bahwa kehidupan demokrasi yang sehat harus dibangun di atas keseimbangan antara hak dan kewajiban.</li>
+                      <li>Dalam demokrasi Indonesia, keseimbangan itu berakar pada kedaulatan rakyat dan musyawarah untuk mufakat.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Hubungan timbal balik hak dan kewajiban</h5>
+                    <ul>
+                      <li>Hak warga negara melahirkan kewajiban negara untuk memenuhinya.</li>
+                      <li>Hak negara melahirkan kewajiban warga negara untuk melaksanakannya.</li>
+                      <li>Karena itu, hak dan kewajiban tidak bisa dipisahkan dan harus berjalan seimbang.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Contoh hubungan resiprokal</h5>
+                    <ul>
+                      <li>Pendidikan: warga berhak mendapatkan pendidikan, negara wajib menyelenggarakannya.</li>
+                      <li>Kebebasan berpendapat: warga berhak menyampaikan pendapat secara bertanggung jawab, negara wajib melindungi kebebasan itu.</li>
+                      <li>Bela negara: negara berhak menuntut partisipasi warga, warga berkewajiban ikut serta.</li>
+                      <li>Pajak: negara berhak memungut pajak, warga berkewajiban membayarnya.</li>
+                      <li>Kesehatan: warga berhak atas layanan kesehatan, negara wajib menyediakan fasilitas dan layanan yang layak.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Sumber historis perkembangan hak</h5>
+                    <ul>
+                      <li>Magna Charta.</li>
+                      <li>Declaration of Independence.</li>
+                      <li>Declaration des droits de l’homme et du citoyen.</li>
+                      <li>Universal Declaration of Human Rights.</li>
+                      <li>Four Freedoms: freedom of religion, freedom of speech, freedom from want, freedom from fear.</li>
+                    </ul>
+                  </div>
+                </div>
+                <div>
+                  <div class="subcard">
+                    <h5>Pasal-pasal penting dalam UUD 1945</h5>
+                    <ul>
+                      <li>Pasal 28A–28J: hak asasi manusia dan kewajiban dasar manusia.</li>
+                      <li>Pasal 28J sangat penting karena menegaskan kewajiban menghormati hak orang lain dan tunduk pada pembatasan yang ditetapkan undang-undang.</li>
+                      <li>Pasal 30: pertahanan dan keamanan negara.</li>
+                      <li>Pasal 31: pendidikan.</li>
+                      <li>Pasal 33: perekonomian nasional.</li>
+                      <li>Pasal 34: kesejahteraan sosial.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Isi penting Pasal 31 dan 34</h5>
+                    <ul>
+                      <li>Pasal 31: tiap warga negara berhak mendapatkan pendidikan.</li>
+                      <li>Pasal 34: fakir miskin dan anak terlantar dipelihara oleh negara.</li>
+                      <li>Negara mengembangkan sistem jaminan sosial bagi seluruh rakyat.</li>
+                      <li>Negara bertanggung jawab atas penyediaan fasilitas pelayanan kesehatan dan pelayanan umum yang layak.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Sumber sosiologis dan urgensi materi ini</h5>
+                    <ul>
+                      <li>Muncul berbagai gejala sosial seperti konflik vertikal, konflik horizontal, oligarki, dan kebencian sosial budaya terselubung.</li>
+                      <li>Kondisi itu menunjukkan bahwa masyarakat tidak boleh hanya menuntut hak, tetapi juga harus sadar akan kewajiban.</li>
+                      <li>Keseimbangan hak dan kewajiban penting untuk menjaga demokrasi, keadilan, harmoni, dan stabilitas nasional.</li>
+                    </ul>
+                  </div>
+                  <div class="subcard">
+                    <h5>Hal yang wajib diingat</h5>
+                    <ol>
+                      <li>Hak dan kewajiban selalu berpasangan.</li>
+                      <li>Warga negara tidak boleh hanya menuntut hak tanpa menjalankan kewajiban.</li>
+                      <li>Pasal paling penting untuk fokus: 28A–28J, 30, 31, 33, dan 34.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        $2
+        <div class="section-header">
+          <div>
+            <h3>Materi yang Paling Penting Dipahami</h3>
+            <p>Ini bagian yang paling aman untuk difokuskan jika waktu belajar Anda terbatas.</p>
+          </div>
+        </div>
+        <div class="important-list">
+          <div class="important-item"><div class="dot"></div><div><strong>Definisi inti</strong><br><span style="color:var(--muted);">Pahami pengertian PKn, identitas nasional, integrasi nasional, konstitusi, kewarganegaraan, hak dan kewajiban, serta perilaku konstitusional.</span></div></div>
+          <div class="important-item"><div class="dot"></div><div><strong>Unsur identitas nasional</strong><br><span style="color:var(--muted);">Pancasila, UUD 1945, Garuda, Merah Putih, Bhinneka Tunggal Ika, Indonesia Raya, Bahasa Indonesia.</span></div></div>
+          <div class="important-item"><div class="dot"></div><div><strong>Faktor dan tantangan integrasi nasional</strong><br><span style="color:var(--muted);">Nilai bersama, ideologi nasional, pembangunan ekonomi, gerakan separatis, konflik, dan globalisasi.</span></div></div>
+          <div class="important-item"><div class="dot"></div><div><strong>Fungsi konstitusi dan dinamika UUD 1945</strong><br><span style="color:var(--muted);">Konstitusi membatasi kekuasaan, mengatur negara, dan menjamin hak warga. Hafal urutan perkembangan konstitusi Indonesia.</span></div></div>
+          <div class="important-item"><div class="dot"></div><div><strong>Pasal penting</strong><br><span style="color:var(--muted);">Pasal 26, 28A–28J, 30, 31, 33, 34, dan 37.</span></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="checklist">
+        <div class="section-header">
+          <div>
+            <h3>Checklist Belajar</h3>
+            <p>Centang bagian yang sudah Anda pelajari. Progress akan tersimpan otomatis di browser.</p>
+          </div>
+        </div>
+        <div class="checklist" id="checklistWrap">
+          <label class="check-item"><input type="checkbox" data-check="1"><span><strong>Saya sudah paham tujuan dan fungsi PKn</strong><br><span style="color:var(--muted);">Termasuk good and smart citizen, cinta tanah air, dan peran PKn bagi mahasiswa.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="2"><span><strong>Saya sudah hafal unsur identitas nasional Indonesia</strong><br><span style="color:var(--muted);">Pancasila, UUD 1945, Garuda, Merah Putih, Indonesia Raya, Bahasa Indonesia, Bhinneka Tunggal Ika.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="3"><span><strong>Saya sudah paham integrasi nasional dan tantangannya</strong><br><span style="color:var(--muted);">Termasuk dimensi horizontal, vertikal, dan ancaman disintegrasi.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="4"><span><strong>Saya sudah paham fungsi konstitusi dan sejarah konstitusi Indonesia</strong><br><span style="color:var(--muted);">Termasuk UUD 1945, RIS, UUDS 1950, Dekrit 1959, dan amandemen.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="5"><span><strong>Saya sudah paham beda warga negara dan penduduk</strong><br><span style="color:var(--muted);">Termasuk ius soli, ius sanguinis, dan Pasal 26 UUD 1945.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="6"><span><strong>Saya sudah memahami hubungan hak dan kewajiban</strong><br><span style="color:var(--muted);">Termasuk pasal 28A–28J, 30, 31, 33, dan 34.</span></span></label>
+          <label class="check-item"><input type="checkbox" data-check="7"><span><strong>Saya sudah paham perilaku konstitusional</strong><br><span style="color:var(--muted);">Bagaimana berperilaku sesuai dengan UUD 1945 dalam kehidupan sehari-hari.</span></span></label>
+        </div>
+      </section>
+
+      <section class="section" id="hafalan">
+        <div class="section-header">
+          <div>
+            <h3>Hafalan Cepat Menjelang Ujian</h3>
+            <p>Bagian ini cocok untuk dibaca ulang cepat sebelum tidur atau sebelum masuk kelas.</p>
+          </div>
+        </div>
+        <div class="quick-grid">
+          <div class="flashcard">
+            <h4>PKn</h4>
+            <p>PKn membentuk warga negara yang cerdas, baik, cinta tanah air, demokratis, berkeadaban, disiplin, dan aktif berpartisipasi dalam kehidupan berbangsa dan bernegara.</p>
+          </div>
+          <div class="flashcard">
+            <h4>Identitas Nasional</h4>
+            <p>Identitas nasional adalah jati diri bangsa Indonesia. Unsurnya meliputi Pancasila, UUD 1945, Garuda, Merah Putih, Bahasa Indonesia, Indonesia Raya, dan Bhinneka Tunggal Ika.</p>
+          </div>
+          <div class="flashcard">
+            <h4>Integrasi Nasional</h4>
+            <p>Integrasi nasional adalah proses menyatukan keberagaman bangsa menjadi satu kesatuan utuh dalam NKRI.</p>
+          </div>
+          <div class="flashcard">
+            <h4>Konstitusi</h4>
+            <p>Konstitusi adalah aturan dasar negara. Fungsinya mengatur negara, membatasi kekuasaan, dan menjamin hak warga negara.</p>
+          </div>
+          <div class="flashcard">
+            <h4>Kewarganegaraan</h4>
+            <p>Warga negara adalah anggota negara. Kewarganegaraan menunjukkan hubungan timbal balik antara warga negara dan negara.</p>
+          </div>
+          <div class="flashcard">
+            <h4>Hak dan Kewajiban</h4>
+            <p>Hak dan kewajiban bersifat timbal balik. Warga negara punya hak yang harus dipenuhi negara, dan negara punya hak yang harus dilaksanakan warga negara.</p>
+          </div>
+        </div>
+        <p class="footer-note">Belajar fokus lebih penting daripada membaca terlalu banyak. Pahami konsep inti, hafalkan unsur penting, lalu ulangi pasal-pasal yang paling sering muncul.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('menuBtn');
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    const accordionItems = [...document.querySelectorAll('.accordion-item')];
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    const collapseAllBtn = document.getElementById('collapseAllBtn');
+    const searchInput = document.getElementById('searchInput');
+    const chips = [...document.querySelectorAll('.chip')];
+    const navLinks = [...document.querySelectorAll('.nav a')];
+    const sections = [...document.querySelectorAll('main section[id]')];
+    const checkboxes = [...document.querySelectorAll('#checklistWrap input[type="checkbox"]')];
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    menuBtn?.addEventListener('click', () => sidebar.classList.toggle('open'));
+    scrollTopBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    function setAccordion(item, open) {
+      const panel = item.querySelector('.accordion-panel');
+      item.classList.toggle('open', open);
+      panel.style.maxHeight = open ? panel.scrollHeight + 'px' : '0px';
+    }
+
+    accordionItems.forEach((item, index) => {
+      const button = item.querySelector('.accordion-button');
+      button.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        setAccordion(item, !isOpen);
+      });
+      if (index === 0) setAccordion(item, true);
+    });
+
+    window.addEventListener('resize', () => {
+      accordionItems.forEach(item => {
+        if (item.classList.contains('open')) {
+          const panel = item.querySelector('.accordion-panel');
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        }
+      });
+    });
+
+    expandAllBtn.addEventListener('click', () => accordionItems.forEach(item => setAccordion(item, true)));
+    collapseAllBtn.addEventListener('click', () => accordionItems.forEach(item => setAccordion(item, false)));
+
+    let activeFilter = 'all';
+    function applyFilters() {
+      const term = searchInput.value.toLowerCase().trim();
+      accordionItems.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const tags = item.dataset.tags || '';
+        const matchesSearch = !term || text.includes(term);
+        const matchesChip = activeFilter === 'all' || tags.includes(activeFilter);
+        item.classList.toggle('hidden', !(matchesSearch && matchesChip));
+      });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    function saveChecklist() {
+      const checked = checkboxes.filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      const percent = Math.round((checked / total) * 100);
+      progressFill.style.width = percent + '%';
+      progressText.textContent = percent + '%';
+      localStorage.setItem('pkn-study-progress', JSON.stringify(checkboxes.map(cb => cb.checked)));
+      checkboxes.forEach(cb => cb.closest('.check-item').classList.toggle('done', cb.checked));
+    }
+
+    function loadChecklist() {
+      const raw = localStorage.getItem('pkn-study-progress');
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          checkboxes.forEach((cb, i) => cb.checked = !!data[i]);
+        } catch (e) {}
+      }
+      saveChecklist();
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', saveChecklist));
+    loadChecklist();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.1 });
+
+    sections.forEach(section => observer.observe(section));
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>
